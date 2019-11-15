@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
+import 'menu.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -10,7 +11,8 @@ class MyApp extends StatelessWidget {
       title: 'Ételrendelés',
       initialRoute: '/',
       routes: {
-        '/': (context) => login
+        '/': (context) => login,
+        'menu': (context) => Menu()
       },
     );
   }

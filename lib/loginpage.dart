@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'header.dart';
 
 final _indicatorKey = GlobalKey<_LoginIndicatorState>();
+final _formKey = GlobalKey<FormState>();
 class LoginPage extends StatelessWidget{
   final indicatorKey = UniqueKey();
   @override
@@ -36,7 +37,6 @@ class LoginPage extends StatelessWidget{
 }
 class LoginForm extends StatelessWidget{
   final TextEditingController _username = TextEditingController(),_password = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context){
     return Form(
@@ -117,7 +117,7 @@ class LoginForm extends StatelessWidget{
               onPressed: ()=>{
                 if(_formKey.currentState.validate()){
                   _indicatorKey.currentState.start(),
-                  _tryLogin(_username.value.text, _password.value.text)
+                  _tryLogin(_username.value.text, _password.value.text,context)
                 }
               },
               color: Color(0xFF620000),
@@ -189,7 +189,7 @@ class LoginIndicator extends StatefulWidget{
   @override
   State<LoginIndicator> createState() => _LoginIndicatorState();
 }
-void _tryLogin(String email,String password) async{
+void _tryLogin(String email,String password, BuildContext context) async{
   final Client _client = Client();
   Response response = await _client.post(
     'https://www.bonappetit.hu/ebed-hazhozszallitas/fooldal',
@@ -201,15 +201,13 @@ void _tryLogin(String email,String password) async{
   );
   String cookie = response.headers["set-cookie"];
   response = await _client.get('https://www.bonappetit.hu/ebed-hazhozszallitas/rendeles',headers: {"cookie":cookie});
-  //String cookie2 = response.headers["set-cookie"];
-  //print (cookie==cookie2);
   String html = Utf8Decoder().convert(response.bodyBytes);
-  String name;
   try{
-    name = html.substring(html.indexOf("Üdv")+4,html.indexOf("!",html.indexOf("Üdv")));
+    String name = html.substring(html.indexOf("Üdv")+4,html.indexOf("!",html.indexOf("Üdv")));
+    print(cookie);
     _indicatorKey.currentState.empty();
-    _indicatorKey.currentState.simpleText(name);
-  //TODO: navigateeeee
+    _formKey.currentState.reset();
+    Navigator.pushNamed(context, 'menu',arguments:cookie);
   }
   catch(e){
     _indicatorKey.currentState.failed();
