@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'globals.dart';
+import 'order.dart';
 
 List<String> _title = ["Betöltés...","Rendelés","Lemondás","Korábbi rendelések","Információ","Profil","Kollégák"];
 final _appBarKey = GlobalKey<_PermaAppBarState>();
@@ -29,6 +30,7 @@ class _MenuState extends State<Menu>{
           color: Color(0xFF620000),
           ),
         ),
+        body: Rendeles(),
       ),
     );
   }
