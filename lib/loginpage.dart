@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'header.dart';
+import 'globals.dart';
 
 final _indicatorKey = GlobalKey<_LoginIndicatorState>();
 final _formKey = GlobalKey<FormState>();
@@ -199,15 +200,14 @@ void _tryLogin(String email,String password, BuildContext context) async{
       "foodlogin" : "Belépés"
     }
   );
-  String cookie = response.headers["set-cookie"];
+  cookie = response.headers["set-cookie"];
   response = await _client.get('https://www.bonappetit.hu/ebed-hazhozszallitas/rendeles',headers: {"cookie":cookie});
   String html = Utf8Decoder().convert(response.bodyBytes);
   try{
     String name = html.substring(html.indexOf("Üdv")+4,html.indexOf("!",html.indexOf("Üdv")));
-    print(cookie);
     _indicatorKey.currentState.empty();
     _formKey.currentState.reset();
-    Navigator.pushNamed(context, 'menu',arguments:cookie);
+    Navigator.pushNamed(context, 'menu');
   }
   catch(e){
     _indicatorKey.currentState.failed();

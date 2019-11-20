@@ -12,7 +12,6 @@ class Menu extends StatefulWidget{
 class _MenuState extends State<Menu>{
   @override
   Widget build(BuildContext context){
-    final String cookie = ModalRoute.of(context).settings.arguments;
     if (_title[0] == "Betöltés...") {
       _getName(cookie, 'https://www.bonappetit.hu/ebed-hazhozszallitas/rendeles');
     }
@@ -32,12 +31,6 @@ class _MenuState extends State<Menu>{
         ),
       ),
     );
-  }
-  Response _getResponse(String cookie,String url){
-    Future<Response> future = get(url,headers: {"cookie":cookie});
-    Response rp;
-    future.then((Response response)=>{rp = response});
-    return rp;
   }
   void _getName(String cookie,String url) async{
     Future<Response> future = get(url,headers: {"cookie":cookie});
