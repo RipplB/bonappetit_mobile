@@ -34,14 +34,12 @@ class _MenuState extends State<Menu>{
     );
   }
   Response _getResponse(String cookie,String url){
-    //Future response = _getFuture(cookie, url);
     Future<Response> future = get(url,headers: {"cookie":cookie});
     Response rp;
     future.then((Response response)=>{rp = response});
     return rp;
   }
   void _getName(String cookie,String url) async{
-    print("getting name");
     Future<Response> future = get(url,headers: {"cookie":cookie});
     future.then((Response response)=>{
       _appBarKey.currentState.setState(()=>{
@@ -77,18 +75,6 @@ class DrawerText extends StatelessWidget{
     );
   }
 }
-class TitleText extends StatelessWidget{
-  @override
-  Widget build(BuildContext context){
-    return Text(
-      _title[activePage],
-      style: TextStyle(
-        color: Color(0xFFFFFFFF),
-        fontSize: 25.0
-      )
-    );
-  }
-}
 class PermaAppBar extends StatefulWidget implements PreferredSizeWidget{
   PermaAppBar({Key key}):super(key:key);
   @override
@@ -102,7 +88,13 @@ class _PermaAppBarState extends State<PermaAppBar>{
   Widget build(BuildContext context){
     return AppBar(
       backgroundColor: Color(0xFF620000),
-      title: TitleText(),
+      title: Text(
+        _title[activePage],
+        style: TextStyle(
+          color: Color(0xFFFFFFFF),
+          fontSize: 25.0
+        )
+      ),
     );
   }
 }
