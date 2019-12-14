@@ -7,7 +7,6 @@ import 'globals.dart';
 final _indicatorKey = GlobalKey<_LoginIndicatorState>();
 final _formKey = GlobalKey<FormState>();
 class LoginPage extends StatelessWidget{
-  final indicatorKey = UniqueKey();
   @override
   Widget build(BuildContext context){
     return SafeArea(
@@ -191,17 +190,18 @@ class LoginIndicator extends StatefulWidget{
   State<LoginIndicator> createState() => _LoginIndicatorState();
 }
 void _tryLogin(String email,String password, BuildContext context) async{
-  final Client _client = Client();
-  Response response = await _client.post(
+  Response response = await client.post(
     'https://www.bonappetit.hu/ebed-hazhozszallitas/fooldal',
     body:{
       "fooduser" : email,
       "foodpass" : password,
       "foodlogin" : "Belépés"
-    }
+    },
   );
+  print(response.headers);
   cookie = response.headers["set-cookie"];
-  response = await _client.get('https://www.bonappetit.hu/ebed-hazhozszallitas/rendeles',headers: {"cookie":cookie});
+  cookie = cookie.substring(0,cookie.indexOf(';'));
+  response = await client.get('https://www.bonappetit.hu/ebed-hazhozszallitas/rendeles',headers: {"cookie":cookie});
   String html = Utf8Decoder().convert(response.bodyBytes);
   try{
     String name = html.substring(html.indexOf("Üdv")+4,html.indexOf("!",html.indexOf("Üdv")));

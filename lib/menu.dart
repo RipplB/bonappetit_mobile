@@ -6,7 +6,7 @@ import 'order.dart';
 
 List<String> _title = ["Betöltés...","Rendelés","Lemondás","Korábbi rendelések","Információ","Profil","Kollégák"];
 final _appBarKey = GlobalKey<_PermaAppBarState>();
-
+Rendeles rendelesWidget = Rendeles();
 class Menu extends StatefulWidget{
   State<Menu> createState() => _MenuState();
 }
@@ -30,7 +30,7 @@ class _MenuState extends State<Menu>{
           color: Color(0xFF620000),
           ),
         ),
-        body: Rendeles(),
+        body: rendelesWidget,
       ),
     );
   }
