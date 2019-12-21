@@ -184,7 +184,7 @@ class _LoginIndicatorState extends State<LoginIndicator>{
   }
 }
 class LoginIndicator extends StatefulWidget{
-  Key key;
+  final Key key;
   LoginIndicator({this.key});
   @override
   State<LoginIndicator> createState() => _LoginIndicatorState();
@@ -198,13 +198,12 @@ void _tryLogin(String email,String password, BuildContext context) async{
       "foodlogin" : "Belépés"
     },
   );
-  print(response.headers);
   cookie = response.headers["set-cookie"];
   cookie = cookie.substring(0,cookie.indexOf(';'));
   response = await client.get('https://www.bonappetit.hu/ebed-hazhozszallitas/rendeles',headers: {"cookie":cookie});
   String html = Utf8Decoder().convert(response.bodyBytes);
   try{
-    String name = html.substring(html.indexOf("Üdv")+4,html.indexOf("!",html.indexOf("Üdv")));
+    html.substring(html.indexOf("Üdv")+4,html.indexOf("!",html.indexOf("Üdv")));
     _indicatorKey.currentState.empty();
     _formKey.currentState.reset();
     Navigator.pushNamed(context, 'menu');

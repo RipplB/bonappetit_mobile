@@ -9,6 +9,7 @@ bool alreadyOrdered = false;
 void addToCart({BuildContext context,@required String foodId,@required DateTime date}) async{
   String snackText;
   final String month = date.month < 10 ? "0${date.month}" : "${date.month}";
+  final String day = date.day < 10 ? "0${date.day}" : "${date.day}";
   try{Response response = await post(
     'https://www.bonappetit.hu/kosarmuvelet',
     headers: {"Cookie":cookie},
@@ -16,14 +17,14 @@ void addToCart({BuildContext context,@required String foodId,@required DateTime 
       'kosar': 'rendeles',
       'op': 'plusz',
       'db': '1',
-      'etelid': '$foodId-${date.year}-$month-${date.day}',
+      'etelid': '$foodId-${date.year}-$month-$day',
       'Ar': '',
-      'datum': '${date.year}-$month-${date.day}'
+      'datum': '${date.year}-$month-$day'
     }
   );
   snackText = response.statusCode == 200 ? "Sikeresen hozzáadva" : "Sikertelen";}
   catch(e){snackText="Sikertelen";}
-  Scaffold.of(context).showSnackBar(SnackBar(content: Text(snackText),duration: Duration(seconds: 2),));
+  Scaffold.of(context).showSnackBar(SnackBar(content: Text(snackText),duration: Duration(seconds: 1),));
   _bloc.refresh();
 }
 class Rendeles extends StatefulWidget {
@@ -56,7 +57,7 @@ class _RendelesState extends State<Rendeles> with SingleTickerProviderStateMixin
   }
   void _tabbed(){
     FocusScope.of(context).unfocus();
-    if(alreadyOrdered && _tabController.index==2 && !_tabController.indexIsChanging){_bloc.refresh();};
+    if(alreadyOrdered && _tabController.index==2 && !_tabController.indexIsChanging){_bloc.refresh();}
   }
   @override
   Widget build(BuildContext context){
@@ -198,7 +199,21 @@ class _FinalizationState extends State<Finalization>{
         Align(
           child: FlatButton(
             child: Text("Rendelés"),
-            onPressed: (){_bloc.refresh();},
+            onPressed: ()async{
+              try{
+                Response response = await post(
+                  'https://www.bonappetit.hu/rendeleskuldes',
+                  body : {
+                    'kartya':'futar',
+                    'saveRendeles':1,
+                    'fizetes':0
+                  }
+                );
+                print(response.body);
+              } catch(e){
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text("Sikertelen megrendelés"),duration: Duration(seconds: 2),));
+              }
+            },
           ),
         )
       ],
