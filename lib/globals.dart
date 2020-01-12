@@ -1,5 +1,6 @@
 
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 Client client = Client();
-int activePage = 0;
+ValueNotifier<int> activePage = ValueNotifier<int>(0);
 String cookie;

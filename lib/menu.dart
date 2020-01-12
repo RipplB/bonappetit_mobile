@@ -7,6 +7,7 @@ import 'order.dart';
 List<String> _title = ["Betöltés...","Rendelés","Lemondás","Korábbi rendelések","Információ","Profil","Kollégák"];
 final _appBarKey = GlobalKey<_PermaAppBarState>();
 Rendeles rendelesWidget = Rendeles();
+List<Widget> widgets = [Container(),Rendeles(),Container(),Container(),Container(),Container(),Container()];
 class Menu extends StatefulWidget{
   State<Menu> createState() => _MenuState();
 }
@@ -24,13 +25,16 @@ class _MenuState extends State<Menu>{
         ),
         drawer: Drawer(
           child: Container(  
-          child: Column(
-            children: createDrawerButtons(),
-          ),
+            child: Column(
+              children: createDrawerButtons(),
+            ),
           color: Color(0xFF620000),
           ),
         ),
-        body: rendelesWidget,
+        body: ValueListenableBuilder(
+          valueListenable: activePage,
+          builder: (BuildContext context,int index, Widget child)=>widgets[index],
+        ),
       ),
     );
   }
@@ -50,8 +54,8 @@ class DrawerButton extends StatelessWidget{
   Widget build(BuildContext context){
     return OutlineButton(
       child: DrawerText(numOf!=0?_title[numOf]:"Főoldal"),
-      borderSide: BorderSide(color: activePage==numOf?Colors.white:Colors.transparent,),
-      onPressed: (){activePage = numOf;Navigator.pop(context);_appBarKey.currentState.refresh();},
+      borderSide: BorderSide(color: activePage.value==numOf?Colors.white:Colors.transparent,),
+      onPressed: (){activePage.value = numOf;Navigator.pop(context);_appBarKey.currentState.refresh();},
     );
   }
 }
@@ -84,7 +88,7 @@ class _PermaAppBarState extends State<PermaAppBar>{
     return AppBar(
       backgroundColor: Color(0xFF620000),
       title: Text(
-        _title[activePage],
+        _title[activePage.value],
         style: TextStyle(
           color: Color(0xFFFFFFFF),
           fontSize: 25.0
@@ -94,9 +98,10 @@ class _PermaAppBarState extends State<PermaAppBar>{
   }
 }
 List<Widget> createDrawerButtons(){
-  List<Widget> list = new List(_title.length);
+  List<Widget> list = new List<Widget>();
+  list.add(Image.asset("assets/logo-bona-bottom.png"));
   for (var i = 0; i < _title.length; i++) {
-    list[i] = DrawerButton(numOf:i);
+    list.add(DrawerButton(numOf:i));
   }
   return list;
 }

@@ -31,7 +31,6 @@ class FoodlistBloc{
       if(list.length >1){
         list.removeLast();
       }
-      print(list);
     }
     stateController.add(_data);
   }

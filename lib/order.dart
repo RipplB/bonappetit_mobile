@@ -99,7 +99,7 @@ class _CodeOrderState extends State<CodeOrder>{
   final codeOrderFormKey = GlobalKey<FormState>();
   _CodeOrderState(){
     if(DateTime.now().weekday<5){
-      firstDate = DateTime.now().hour < 14 ? DateTime.now() : DateTime.now().add(Duration(days: 1));
+      firstDate = DateTime.now().hour < 14 ? DateTime.now().add(Duration(days: 1)) : DateTime.now().add(Duration(days: 2));
     }else{
       firstDate = DateTime.now().add(Duration(days: 8-DateTime.now().weekday));
     }
@@ -139,7 +139,7 @@ class _CodeOrderState extends State<CodeOrder>{
               Expanded(child:Text("Írja be az étel kódját:")),
               Expanded(
                 child:TextFormField(
-                  validator: (value)=> value.toString().length < 4 && value.toString().length > 1 ? null : "Helytelen kód!",
+                  validator: (value)=> value.toString().length < 4 && value.toString().length > 0 ? null : "Helytelen kód!",
                   controller: idField,
                 )
               )
@@ -187,13 +187,19 @@ class _FinalizationState extends State<Finalization>{
           child: Center(child: Text("Rendelés áttekintése"),),
         ),
         Expanded(
-          child: StreamBuilder(
-            initialData: _lastData,
-            stream: _bloc.stateController.stream,
-            builder: (BuildContext context,AsyncSnapshot snapshot){
-              _lastData = snapshot.data;
-              return FoodList(snapshot.data);
-            },
+          child: SingleChildScrollView(
+            child: StreamBuilder(
+              initialData: _lastData,
+              stream: _bloc.stateController.stream,
+              builder: (BuildContext context,AsyncSnapshot snapshot){
+                _lastData = snapshot.data;
+                if(_lastData == null){
+                  return Text("Még nem rendelt semmit");
+                }else{
+                  return FoodList(snapshot.data);
+                }
+              },
+            ),
           )
         ),
         Align(
@@ -207,6 +213,9 @@ class _FinalizationState extends State<Finalization>{
                     'kartya':'futar',
                     'saveRendeles':1,
                     'fizetes':0
+                  },
+                  headers: {
+                    "cookie":cookie
                   }
                 );
                 print(response.body);
@@ -221,18 +230,49 @@ class _FinalizationState extends State<Finalization>{
   }  
 }
 class FoodList extends StatelessWidget{
-  final List<List<String>> list;
-  FoodList(this.list):super();
-  @override
-  Widget build(BuildContext context){
-    if(list == null){return Text("üres");}
-    return ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (BuildContext context,int index){
-        return Card(
-          child: Text(list[index].join(" ")),
-        );
-      },
-    );
+  List<Widget> widgets = List<Widget>();
+  List<DataColumn> columns;
+  List<DataRow> rows = List<DataRow>();
+  FoodList(List<List<String>> list):super(){
+    for (List<String> line in list){
+      if(line[0].contains(". hét összesen")){
+        if(rows.length > 0){
+          widgets.add(SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columnSpacing: 10,
+              columns: columns,
+              rows: List.of(rows),
+            ),
+          ));
+        }
+        widgets.add(Text(
+          line.join(" "),
+          style: TextStyle(
+            fontSize: 20.0
+          ),
+        ));
+        continue;
+      }
+      if(line[0].contains(". hét")){
+        widgets.add(Text(
+          line.join(" "),
+          style: TextStyle(
+            fontSize: 20.0
+          ),
+        ));
+        continue;
+      }
+      if(line[0].toLowerCase()=="nap"){
+        rows.clear();
+        columns = List<DataColumn>.generate(line.length, (int index)=>DataColumn(label: Text(line[index])));
+        continue;
+      }
+      rows.add(DataRow(
+        cells: List<DataCell>.generate(line.length, (int index)=>DataCell(Text(line[index]))) 
+      ));
+    }
   }
+  @override
+  Widget build(BuildContext context)=>Column(children: widgets,);
 }
